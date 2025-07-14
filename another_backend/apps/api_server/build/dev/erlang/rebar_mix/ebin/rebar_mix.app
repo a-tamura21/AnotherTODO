@@ -1,0 +1,12 @@
+{application,rebar_mix,
+             [{description,"A rebar plugin for building Elixir dependencies with mix"},
+              {vsn,"0.5.1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[rebar_mix,rebar_mix_compiler,rebar_mix_dep,
+                        rebar_mix_hex,rebar_mix_hook,rebar_mix_utils]},
+              {maintainers,["Tristan Sloughter","Andres Mareca"]},
+              {licenses,["Apache 2.0"]},
+              {links,[{"Github",
+                       "https://github.com/Supersonido/rebar_mix"}]}]}.
