@@ -26,6 +26,8 @@ defmodule DatabaseUtil.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:bandit, "~> 1.7.0"},
+      {:plug, "~> 1.15"},
       {:ecto_sql, "~> 3.11"},
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.4"}

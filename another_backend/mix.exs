@@ -16,6 +16,6 @@ defmodule AnotherBackend.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [{:bandit, "~> 1.7.0"}, {:plug, "~> 1.15"}]
   end
 end

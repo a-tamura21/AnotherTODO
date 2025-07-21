@@ -10,6 +10,9 @@ import logging
 @external(erlang, "Elixir.DatabaseUtil.TaskFunctions", "get_all_tasks")
 pub fn get_all_tasks() -> String
 
+@external(erlang, "Elixir.DatabaseUtil.UserTasks", "create_user")
+pub fn create_user(map: dynamic) -> Nil
+
 import mist.{type Connection, type ResponseData}
 
 pub fn logs() {

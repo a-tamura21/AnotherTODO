@@ -10,7 +10,8 @@ defmodule DatabaseUtil.Application do
     children = [
       # Starts a worker by calling: DatabaseUtil.Worker.start_link(arg)
       # {DatabaseUtil.Worker, arg}
-      DatabaseUtil.Repo
+      DatabaseUtil.Repo,
+      {Bandit, plug: DatabaseUtil.BackendApi}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
