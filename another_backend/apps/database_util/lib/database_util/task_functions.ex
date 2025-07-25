@@ -17,7 +17,7 @@ defmodule DatabaseUtil.TaskFunctions do
     |> Repo.insert()
   end
 
-  def task_byID(task_id) do
+  def task_by_id(task_id) do
     task = Repo.get(Task, task_id) |> Repo.preload(:user)
     Jason.encode!(task)
   end
@@ -31,8 +31,9 @@ defmodule DatabaseUtil.TaskFunctions do
     |> Repo.update()
   end
 
-  def delete_task(taskID) do
-    task = Repo.get!(Task, taskID)
+  def delete_task(%{"task_id" => task_id}) do
+    task_id = String.to_integer(task_id)
+    task = Repo.get!(Task, task_id)
     Repo.delete(task)
   end
 end

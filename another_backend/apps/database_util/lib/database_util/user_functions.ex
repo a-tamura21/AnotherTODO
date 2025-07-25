@@ -25,9 +25,9 @@ defmodule DatabaseUtil.UserTasks do
 
   def update_password(user_attrs) do
     id = user_attrs[:id]
-    updated_password = Repo.get(User, id)
+    user = Repo.get(User, id)
 
-    updated_password
+    user
     |> User.password_validate(user_attrs)
     |> Repo.update()
   end

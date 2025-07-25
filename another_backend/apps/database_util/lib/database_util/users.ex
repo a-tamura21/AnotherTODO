@@ -15,8 +15,12 @@ defmodule DatabaseUtil.User do
     user
     |> cast(attrs, [:email, :raw_password])
     |> validate_required([:email, :raw_password])
-    |> validate_format(:email, ~r/@/)
-    |> validate_format(:raw_password, ~r/^[A-Za-z]+$/, message: "must contain only letters")
+    |> validate_format(:email, ~r/^[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+      message: "must be a valid email"
+    )
+    |> validate_format(:raw_password, ~r/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/,
+      message: "must contain at least one letter and one number"
+    )
     |> unique_constraint(:email)
     |> send_to_hash()
   end
@@ -26,15 +30,20 @@ defmodule DatabaseUtil.User do
     user
     |> cast(user_attr, [:email])
     |> validate_required([:email, :password])
-    |> validate_format(:email, ~r/@/)
+    |> validate_format(:email, ~r/^[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+      message: "must be a valid email"
+    )
     |> unique_constraint(:email)
   end
 
   def password_validate(user, user_attrs) do
     user
-    |> cast(user_attrs, [:password])
-    |> validate_required(:password)
-    |> validate_format(:name, ~r/^[A-Za-z]+$/, message: "must contain only letters")
+    |> cast(user_attrs, [:raw_password])
+    |> validate_required(:raw_password)
+    |> validate_format(:raw_password, ~r/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/,
+      message: "must contain at least one letter and one number"
+    )
+    |> send_to_hash()
   end
 
   def timezone_validate(user, user_attrs) do
