@@ -23,7 +23,8 @@ defmodule DatabaseUtil.TaskFunctions do
   end
 
   def update_task(task_attrs) do
-    id = task_attrs[:id]
+    id = Map.get(task_attrs, "task_id") |> String.to_integer()
+    #id = task_attrs[:id]
     task = Repo.get(Task, id)
 
     task

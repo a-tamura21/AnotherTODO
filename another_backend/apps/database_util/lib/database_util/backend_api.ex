@@ -36,6 +36,14 @@ defmodule DatabaseUtil.BackendApi do
     send_resp(conn, 200, "received")
   end
 
+  #update post endpoint
+  put "tasks" do
+    data = conn.body_params
+    IO.inspect(data)
+    TaskFunctions.update_task(data)
+    send_resp(conn, 200, "updated")
+  end
+
   # create user endpoint
   post "users" do
     user = conn.body_params
