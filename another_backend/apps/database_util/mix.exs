@@ -26,6 +26,7 @@ defmodule DatabaseUtil.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:uuid_v7, "~> 0.6.0"},
       {:bandit, "~> 1.7.0"},
       {:plug, "~> 1.15"},
       {:ecto_sql, "~> 3.11"},
