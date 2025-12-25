@@ -2,12 +2,16 @@ defmodule DatabaseUtil.Repo.Migrations.Users do
   use Ecto.Migration
 
   def change do
-    create table(:users) do
-      add(:email, :string, null: false)
-      add(:password, :string, null: false)
+    create table(:users, primary_key: false) do
+      add(:id, :uuid, primary_key: true)
+      add(:email_hashed, :string, null: false)
+      add(:email_encrypted, :binary, null: false)
+      add(:password_hahsed, :string, null: false)
+      add(:encrypted_user_key, :binary, null: false)
       add(:timezone, :string)
+      timestamps()
     end
 
-    create(unique_index(:users, [:email]))
+    create(unique_index(:users, [:email_hashed]))
   end
 end
