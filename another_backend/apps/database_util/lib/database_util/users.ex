@@ -3,11 +3,13 @@ defmodule DatabaseUtil.User do
   import Ecto.Changeset
   alias DatabaseUtil.Utilities
 
-  @derive {Jason.Encoder, except: [:__meta__, :password]}
+  @primary_key {:id, UUIDv7.Type, autogenerate: true}
+  @derive {Jason.Encoder, except: [:__meta__, :password_hashed, :encrypted_user_key]}
   schema "users" do
-    field(:email, :string)
-    field(:raw_password, :string, virtual: true)
-    field(:password, :string)
+    field(:email_hased, :string)
+    field(:email_encrypted, :binary)
+    field(:password_hashed, :string)
+    field(:encrypted_user_key, :binary)
     field(:timezone, :string)
   end
 

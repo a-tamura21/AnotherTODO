@@ -2,10 +2,13 @@ defmodule DatabaseUtil.Task do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, UUIDv7.Type, autogenerate: true}
+  @foreign_key_type UUIDv7.Type
   @derive {Jason.Encoder, except: [:__meta__]}
   schema "tasks" do
     field(:title, :string)
-    field(:description, :string)
+    field(:content_encrypted, :binary)
+    field(:content_hashed, :string)
     field(:is_complete, :boolean, default: false)
     field(:due_date, :utc_datetime)
     field(:priority, :integer, default: 3)

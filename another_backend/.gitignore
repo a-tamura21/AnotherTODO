@@ -21,3 +21,6 @@ erl_crash.dump
 
 #gleam build files
 /apps/api_server/build
+
+#env settings
+*.env

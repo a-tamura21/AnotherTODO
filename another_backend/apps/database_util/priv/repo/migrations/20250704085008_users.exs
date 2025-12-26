@@ -8,8 +8,8 @@ defmodule DatabaseUtil.Repo.Migrations.Users do
       add(:email_encrypted, :binary, null: false)
       add(:password_hahsed, :string, null: false)
       add(:encrypted_user_key, :binary, null: false)
-      add(:timezone, :string)
-      timestamps()
+
+      timestamps(type: :utc_datetime)
     end
 
     create(unique_index(:users, [:email_hashed]))
