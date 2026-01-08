@@ -32,12 +32,12 @@ defmodule DatabaseUtil.UserTasks do
     |> Repo.update()
   end
 
-  def update_timezone(user_attrs) do
-    id = user_attrs[:id]
-    updated_timezone = Repo.get(User, id)
+  # def update_timezone(user_attrs) do
+  #   id = user_attrs[:id]
+  #   updated_timezone = Repo.get(User, id)
 
-    updated_timezone
-    |> User.timezone_validate(user_attrs)
-    |> Repo.update()
-  end
+  #   updated_timezone
+  #   |> User.timezone_validate(user_attrs)
+  #   |> Repo.update()
+  # end
 end

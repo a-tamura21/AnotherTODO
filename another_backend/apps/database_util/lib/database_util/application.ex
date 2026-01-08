@@ -11,8 +11,8 @@ defmodule DatabaseUtil.Application do
     children = [
       # Starts a worker by calling: DatabaseUtil.Worker.start_link(arg)
       # {DatabaseUtil.Worker, arg}
-      DatabaseUtil.Repo,
       DatabaseUtil.Vault,
+      DatabaseUtil.Repo,
       {Bandit, plug: DatabaseUtil.BackendApi}
     ]
 

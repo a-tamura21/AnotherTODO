@@ -1,14 +1,14 @@
 defmodule DatabaseUtil.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DatabaseUtil.{Encrypted, Vault, Utilities}
+  alias DatabaseUtil.{Encrypted, Utilities}
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "users" do
     # These match your MIGRATION columns
-    field(:email_hashed, Cloak.Ecto.HMAC, vault: Vault, secret_key: &Vault.search_key/0)
-    field(:email_encrypted, Encrypted.Binary)
+    field(:email_hashed, DatabaseUtil.Hashed.HMAC)
+    field(:email_encrypted, DatabaseUtil.Encrypted.Binary)
     # Matches password_hahsed in your migration
     field(:password_hashed, :string)
     field(:encrypted_user_key, Encrypted.Binary)
@@ -24,8 +24,8 @@ defmodule DatabaseUtil.User do
   # Main registration validation
   def user_validate(user, attrs) do
     user
-    |> cast(attrs, [:email, :password, :timezone])
-    |> validate_required([:email, :password, :timezone])
+    |> cast(attrs, [:email, :password])
+    |> validate_required([:email, :password])
     |> common_validations()
     |> prepare_sensitive_data()
     # Constraint is on the HASH
@@ -56,7 +56,7 @@ defmodule DatabaseUtil.User do
   defp common_validations(changeset) do
     changeset
     |> validate_format(:email, ~r/^[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
-    |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/)
+    |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d).+$/)
   end
 
   # The Security Pipeline
@@ -66,11 +66,11 @@ defmodule DatabaseUtil.User do
       password = get_change(changeset, :password)
 
       changeset
-      # Cloak.Ecto.HMAC handles hashing automatically if we pass plain text
+      # Cloak.Ecto.HMAC handles hashing automatically if plain text is passed
       |> put_change(:email_hashed, email)
       # Encrypted.Binary handles encryption automatically via Vault
       |> put_change(:email_encrypted, email)
-      # Argon2/Bcrypt for password
+      # Bcrypt for password
       |> put_change(:password_hashed, Utilities.hash_password(password))
       # Generate a unique key for this specific user
       |> put_change(:encrypted_user_key, :crypto.strong_rand_bytes(32))
