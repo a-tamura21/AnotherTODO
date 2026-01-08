@@ -4,7 +4,7 @@ import Dotenvy
 # Read the file
 source!([".env"])
 
-config :database_util, Database_util.Repo,
+config :database_util, DatabaseUtil.Repo,
   username: env!("USERNAME", :string!),
   password: env!("PASSWORD", :string!),
   database: env!("DATABASE", :string!),

@@ -4,7 +4,7 @@ defmodule DatabaseUtil.Vault do
   @impl Cloak.Vault
   def init(config) do
     # Fetch the key that Dotenvy loaded into your app config in runtime.exs
-    master_key = Application.fetch_env!(:my_app, :db_encryption)[:master_key]
+    master_key = Application.fetch_env!(:database_util, :db_encryption)[:master_key]
 
     config =
       Keyword.put(config, :ciphers, [
