@@ -6,11 +6,13 @@ defmodule DatabaseUtil.Application do
   use Application
 
   @impl true
+
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: DatabaseUtil.Worker.start_link(arg)
       # {DatabaseUtil.Worker, arg}
       DatabaseUtil.Repo,
+      DatabaseUtil.Vault,
       {Bandit, plug: DatabaseUtil.BackendApi}
     ]
 
