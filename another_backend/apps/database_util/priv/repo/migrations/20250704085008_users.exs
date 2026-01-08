@@ -4,7 +4,7 @@ defmodule DatabaseUtil.Repo.Migrations.Users do
   def change do
     create table(:users, primary_key: false) do
       add(:id, :uuid, primary_key: true)
-      add(:email_hashed, :string, null: false)
+      add(:email_hashed, :binary, null: false)
       add(:email_encrypted, :binary, null: false)
       add(:password_hashed, :string, null: false)
       add(:encrypted_user_key, :binary, null: false)

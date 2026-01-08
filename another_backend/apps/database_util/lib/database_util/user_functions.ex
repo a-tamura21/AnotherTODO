@@ -10,7 +10,7 @@ defmodule DatabaseUtil.UserTasks do
   def create_user(user_attr) do
     %User{}
     |> User.user_validate(user_attr)
-    |> Repo.insert!()
+    |> Repo.insert()
   end
 
   def update_email(user_attrs) do

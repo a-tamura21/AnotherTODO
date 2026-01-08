@@ -1,7 +1,7 @@
 defmodule DatabaseUtil.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DatabaseUtil.{Encrypted, Utilities}
+  alias DatabaseUtil.{Utilities}
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -11,7 +11,7 @@ defmodule DatabaseUtil.User do
     field(:email_encrypted, DatabaseUtil.Encrypted.Binary)
     # Matches password_hahsed in your migration
     field(:password_hashed, :string)
-    field(:encrypted_user_key, Encrypted.Binary)
+    field(:encrypted_user_key, DatabaseUtil.Encrypted.Binary)
     field(:timezone, :string)
 
     # VIRTUAL fields for raw user input (not saved to DB directly)
@@ -66,13 +66,15 @@ defmodule DatabaseUtil.User do
       password = get_change(changeset, :password)
 
       changeset
-      # Cloak.Ecto.HMAC handles hashing automatically if plain text is passed
+      # 1. Just pass the plaintext email to these fields.
+      # Cloak.Ecto.HMAC and Encrypted.Binary will catch them during Repo.insert.
       |> put_change(:email_hashed, email)
-      # Encrypted.Binary handles encryption automatically via Vault
       |> put_change(:email_encrypted, email)
-      # Bcrypt for password
+
+      # 2. Keep manual hashing for the password since Bcrypt isn't a Cloak type
       |> put_change(:password_hashed, Utilities.hash_password(password))
-      # Generate a unique key for this specific user
+
+      # 3. Generate the key - this MUST be binary (<<...>>)
       |> put_change(:encrypted_user_key, :crypto.strong_rand_bytes(32))
     else
       changeset

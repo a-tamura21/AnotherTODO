@@ -7,7 +7,7 @@ defmodule DatabaseUtil.Vault do
       Application.fetch_env!(:database_util, :db_encryption)[:master_key]
       |> Base.decode64!()
 
-    # Derive keys
+    # Key Derivation
     enc_key = :crypto.mac(:hmac, :sha256, master, "encryption_v1")
     idx_key = :crypto.mac(:hmac, :sha256, master, "blind_index_v1")
 
@@ -19,12 +19,19 @@ defmodule DatabaseUtil.Vault do
     {:ok, config}
   end
 
-  # Helper to retrieve the key from Cloak's internal storage
   def search_key do
-    # Cloak 1.1+ automatically creates this ETS table
-    case :ets.lookup(DatabaseUtil.Vault.Config, :hmac_secret) do
-      [{:hmac_secret, key}] -> key
-      _ -> nil
+    # Cloak 1.1+ table name is [YourVault].Config
+    table = DatabaseUtil.Vault.Config
+
+    # Check if table exists (avoids crashes during early IEx boot)
+    if :ets.whereis(table) != :undefined do
+      # 2026 Standard: Cloak stores everything under the :config key
+      case :ets.lookup(table, :config) do
+        [{:config, vault_config}] -> vault_config[:hmac_secret]
+        _ -> nil
+      end
+    else
+      nil
     end
   end
 end

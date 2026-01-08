@@ -3,14 +3,21 @@ defmodule DatabaseUtil.Hashed.HMAC do
 
   @impl Cloak.Ecto.HMAC
   def init(config) do
-    # Fetch key dynamically; if nil, Ecto will fail gracefully during 'dump'
-    # instead of crashing during compilation/initialization.
-    config =
-      Keyword.merge(config,
-        algorithm: :sha256,
-        secret: DatabaseUtil.Vault.search_key()
-      )
+    # Fetch the key derived in DatabaseUtil.Vault.init/1
+    case DatabaseUtil.Vault.search_key() do
+      nil ->
+        # If the Vault isn't ready yet, we return the config as-is.
+        # Cloak will only error if it tries to 'dump' while secret is still nil.
+        {:ok, config}
 
-    {:ok, config}
+      key ->
+        config =
+          Keyword.merge(config,
+            algorithm: :sha256,
+            secret: key
+          )
+
+        {:ok, config}
+    end
   end
 end
