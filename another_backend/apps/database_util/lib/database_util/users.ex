@@ -24,9 +24,11 @@ defmodule DatabaseUtil.User do
   # Main registration validation
   def user_validate(user, attrs) do
     user
-    |> cast(attrs, [:email, :password])
+    # Added timezone if needed
+    |> cast(attrs, [:email, :password, :timezone])
     |> validate_required([:email, :password])
     |> common_validations()
+    # This now handles email AND password
     |> prepare_sensitive_data()
     # Constraint is on the HASH
     |> unique_constraint(:email_hashed)
@@ -61,21 +63,29 @@ defmodule DatabaseUtil.User do
 
   # The Security Pipeline
   defp prepare_sensitive_data(changeset) do
-    if changeset.valid? do
-      email = get_change(changeset, :email)
-      password = get_change(changeset, :password)
+    # 1. Handle Email
+    changeset =
+      if email = get_change(changeset, :email) do
+        # We put the RAW string here.
+        # Ecto sees the type is 'DatabaseUtil.Hashed.HMAC'
+        # and will hash it automatically during Repo.insert.
+        changeset = put_change(changeset, :email_hashed, email)
 
-      changeset
-      # 1. Just pass the plaintext email to these fields.
-      # Cloak.Ecto.HMAC and Encrypted.Binary will catch them during Repo.insert.
-      |> put_change(:email_hashed, email)
-      |> put_change(:email_encrypted, email)
+        case DatabaseUtil.Vault.encrypt(email) do
+          {:ok, encrypted_binary} ->
+            put_change(changeset, :email_encrypted, encrypted_binary)
 
-      # 2. Keep manual hashing for the password since Bcrypt isn't a Cloak type
-      |> put_change(:password_hashed, Utilities.hash_password(password))
+          {:error, _reason} ->
+            add_error(changeset, :email, "encryption failed")
+        end
+      else
+        changeset
+      end
 
-      # 3. Generate the key - this MUST be binary (<<...>>)
-      |> put_change(:encrypted_user_key, :crypto.strong_rand_bytes(32))
+    # 2. Handle Password (Crucial: This was missing in your last log)
+    if password = get_change(changeset, :password) do
+      # Passwords ARE usually hashed manually via a utility
+      put_change(changeset, :password_hashed, DatabaseUtil.Utilities.hash_password(password))
     else
       changeset
     end

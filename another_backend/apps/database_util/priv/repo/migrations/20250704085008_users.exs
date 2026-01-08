@@ -7,7 +7,8 @@ defmodule DatabaseUtil.Repo.Migrations.Users do
       add(:email_hashed, :binary, null: false)
       add(:email_encrypted, :binary, null: false)
       add(:password_hashed, :string, null: false)
-      add(:encrypted_user_key, :binary, null: false)
+      # add(:encrypted_user_key, :binary, null: false)
+      add(:timezone, :string, default: "UTC")
 
       timestamps(type: :utc_datetime)
     end

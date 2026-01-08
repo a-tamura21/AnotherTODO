@@ -3,14 +3,16 @@ defmodule DatabaseUtil.Vault do
 
   @impl GenServer
   def init(config) do
+    # 1. Fetch Master Key (from Dotenvy via runtime.exs)
     master =
       Application.fetch_env!(:database_util, :db_encryption)[:master_key]
       |> Base.decode64!()
 
-    # Key Derivation
+    # 2. Derive distinct keys for Encryption and Searching
     enc_key = :crypto.mac(:hmac, :sha256, master, "encryption_v1")
     idx_key = :crypto.mac(:hmac, :sha256, master, "blind_index_v1")
 
+    # 3. Store both in the Vault's configuration
     config =
       config
       |> Keyword.put(:ciphers, default: {Cloak.Ciphers.AES.GCM, tag: "GCM", key: enc_key})
@@ -19,13 +21,12 @@ defmodule DatabaseUtil.Vault do
     {:ok, config}
   end
 
+  # This function must be OUTSIDE of the init/1 function
   def search_key do
-    # Cloak 1.1+ table name is [YourVault].Config
+    # Cloak 1.1+ table name
     table = DatabaseUtil.Vault.Config
 
-    # Check if table exists (avoids crashes during early IEx boot)
     if :ets.whereis(table) != :undefined do
-      # 2026 Standard: Cloak stores everything under the :config key
       case :ets.lookup(table, :config) do
         [{:config, vault_config}] -> vault_config[:hmac_secret]
         _ -> nil
