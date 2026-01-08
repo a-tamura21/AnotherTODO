@@ -26,6 +26,7 @@ defmodule DatabaseUtil.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:cloak_ecto, "~> 1.3"},
       {:dotenvy, "~> 0.8.0"},
       {:uuid_v7, "~> 0.6.0"},
       {:bandit, "~> 1.7.0"},

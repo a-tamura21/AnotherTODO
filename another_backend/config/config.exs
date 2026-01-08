@@ -14,9 +14,9 @@ config :database_util,
   ecto_repos: [DatabaseUtil.Repo]
 
 # Repo-specific settings
-config :database_util, DatabaseUtil.Repo,
-  database: "another_todo",
-  username: "postgres",
-  password: "admin",
-  hostname: "localhost",
-  pool_size: 10
+# config :database_util, DatabaseUtil.Repo,
+# database: "another_todo",
+# username: "postgres",
+# password: "admin",
+# hostname: "localhost",
+# pool_size: 10
