@@ -63,28 +63,30 @@ defmodule DatabaseUtil.User do
 
   # The Security Pipeline
   defp prepare_sensitive_data(changeset) do
-    # 1. Handle Email
+    # Handle Email
     changeset =
       if email = get_change(changeset, :email) do
-        # We put the RAW string here.
-        # Ecto sees the type is 'DatabaseUtil.Hashed.HMAC'
-        # and will hash it automatically during Repo.insert.
-        changeset = put_change(changeset, :email_hashed, email)
+        # MANUALLY HASH IT HERE
+        # Since your HMAC.dump test works, use it directly:
+        case DatabaseUtil.Hashed.HMAC.dump(email) do
+          {:ok, hashed_email} ->
+            changeset = put_change(changeset, :email_hashed, hashed_email)
 
-        case DatabaseUtil.Vault.encrypt(email) do
-          {:ok, encrypted_binary} ->
-            put_change(changeset, :email_encrypted, encrypted_binary)
+            # Continue with encryption
+            case DatabaseUtil.Vault.encrypt(email) do
+              {:ok, encrypted_binary} -> put_change(changeset, :email_encrypted, encrypted_binary)
+              {:error, _} -> add_error(changeset, :email, "encryption failed")
+            end
 
-          {:error, _reason} ->
-            add_error(changeset, :email, "encryption failed")
+          _ ->
+            add_error(changeset, :email, "hashing failed")
         end
       else
         changeset
       end
 
-    # 2. Handle Password (Crucial: This was missing in your last log)
+    # Handle Password
     if password = get_change(changeset, :password) do
-      # Passwords ARE usually hashed manually via a utility
       put_change(changeset, :password_hashed, DatabaseUtil.Utilities.hash_password(password))
     else
       changeset

@@ -3,16 +3,22 @@ defmodule DatabaseUtil.Hashed.HMAC do
 
   @impl Cloak.Ecto.HMAC
   def init(config) do
-    # 1. Get the derived key from the Vault
-    # 2. Provide a fallback so it doesn't crash if called during boot
-    secret = DatabaseUtil.Vault.search_key()
+    # Ensure search_key() actually returns a binary key
+    case DatabaseUtil.Vault.search_key() do
+      secret when is_binary(secret) and secret != "" ->
+        config =
+          Keyword.merge(config,
+            algorithm: :sha256,
+            secret: secret
+          )
 
-    config =
-      Keyword.merge(config,
-        algorithm: :sha256,
-        secret: secret
-      )
+        {:ok, config}
 
-    {:ok, config}
+      _ ->
+        # Log a warning so you know why hashing is failing
+        require Logger
+        Logger.error("HMAC initialization failed: Vault search_key returned nil or empty.")
+        :error
+    end
   end
 end
