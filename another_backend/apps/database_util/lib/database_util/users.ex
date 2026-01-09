@@ -4,6 +4,7 @@ defmodule DatabaseUtil.User do
   alias DatabaseUtil.{Utilities}
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Inspect, except: [:email_encrypted]}
 
   schema "users" do
     # These match your MIGRATION columns
@@ -11,7 +12,6 @@ defmodule DatabaseUtil.User do
     field(:email_encrypted, DatabaseUtil.Encrypted.Binary)
     # Matches password_hahsed in your migration
     field(:password_hashed, :string)
-    field(:encrypted_user_key, DatabaseUtil.Encrypted.Binary)
     field(:timezone, :string)
 
     # VIRTUAL fields for raw user input (not saved to DB directly)
