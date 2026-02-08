@@ -10,6 +10,7 @@ The backend provides complete user privacy with hashing and encryption to keep a
 For the database I'm currently using PostgreSQL as it's the one I'm most familiar with.
 What still needs to be decided is what to do about animations for the frontend when using React with ReScript.
 Also considering if I should dockerize the project or just make it deployable to AWS
+*Currently the secureDB branch is far ahead of main
 
 このアプリは、関数型プログラミング言語のみを使った学習プロジェクトとして始めました。
 そこで、多くの人と同じようにToDoアプリを作ることにしました。しかし、さらに一歩踏み込むことにしました。
@@ -21,3 +22,4 @@ Also considering if I should dockerize the project or just make it deployable to
 データベースについては、現在最も使い慣れているPostgreSQLを使用しています。
 まだ決めなければならないのは、ReactとReScriptを使用する際にフロントエンドのアニメーションをどうするかということです。
 また、プロジェクトをDocker化するべきか、それともAWSにデプロイできるようにするべきか検討中です。
+*現在、secureDBブランチはメインよりはるかに進んでいます
