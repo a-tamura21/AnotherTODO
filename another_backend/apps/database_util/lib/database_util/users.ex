@@ -7,10 +7,9 @@ defmodule DatabaseUtil.User do
   @derive {Inspect, except: [:email_encrypted]}
 
   schema "users" do
-    # These match your MIGRATION columns
+    # users schema
     field(:email_hashed, DatabaseUtil.Hashed.HMAC)
     field(:email_encrypted, DatabaseUtil.Encrypted.Binary)
-    # Matches password_hahsed in your migration
     field(:password_hashed, :string)
     field(:timezone, :string)
 
@@ -55,14 +54,15 @@ defmodule DatabaseUtil.User do
   end
 
   # Helper for shared regex logic
-  defp common_validations(changeset) do
+  def common_validations(changeset) do
     changeset
     |> validate_format(:email, ~r/^[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
-    |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d).+$/)
+
+    # |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d).+$/)
   end
 
   # The Security Pipeline
-  defp prepare_sensitive_data(changeset) do
+  def prepare_sensitive_data(changeset) do
     # Handle Email
     changeset =
       if email = get_change(changeset, :email) do

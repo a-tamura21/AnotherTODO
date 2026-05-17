@@ -9,7 +9,7 @@ defmodule DatabaseUtil.Task do
   schema "tasks" do
     field(:title_hashed, :string)
     field(:content_encrypted, DatabaseUtil.Encrypted.Binary)
-    field(:content_hashed, DatabaseUtil.Hashed.HMAC)
+    # field(:content_hashed, DatabaseUtil.Hashed.HMAC)
     field(:is_complete, :boolean, default: false)
     field(:due_date, :utc_datetime)
     field(:priority, :integer, default: 3)

@@ -10,17 +10,26 @@ defmodule DatabaseUtil.UserTasks do
   def create_user(user_attr) do
     %User{}
     |> User.user_validate(user_attr)
-    |> Repo.insert()
+    |> Repo.insert!()
   end
 
   def update_email(user_attrs) do
-    id = user_attrs[:id]
-    updated_email = Repo.get(User, id)
+    email = user_attrs[:email]
 
-    updated_email
-    |> User.email_validate(user_attrs)
-    # reminder that the validated email will be passed back.
-    |> Repo.update()
+    email
+    |> User.common_validations()
+
+    id = user_attrs[:id]
+
+    hashed_email = Repo.get!(User, id).email_hashed
+    IO.inspect(hashed_email)
+
+    IO.inspect(email)
+
+    # updated_email
+    # |> User.email_validate(user_attrs)
+    # # reminder that the validated email will be passed back.
+    # |> Repo.update()
   end
 
   def update_password(user_attrs) do

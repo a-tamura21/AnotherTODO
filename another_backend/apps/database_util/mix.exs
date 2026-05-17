@@ -27,7 +27,7 @@ defmodule DatabaseUtil.MixProject do
   defp deps do
     [
       {:cloak_ecto, "~> 1.3"},
-      {:dotenvy, "~> 0.8.0"},
+      {:dotenvy, "~> 1.1.1"},
       {:uuid_v7, "~> 0.6.0"},
       {:bandit, "~> 1.7.0"},
       {:plug, "~> 1.15"},
@@ -35,7 +35,8 @@ defmodule DatabaseUtil.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.4"},
       {:bcrypt_elixir, "~> 3.3.2"},
-      {:pbkdf2_elixir, "~> 2.0"}
+      {:pbkdf2_elixir, "~> 2.0"},
+      {:langchain, "~> 0.8.0"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       # {:sibling_app_in_umbrella, in_umbrella: true}
