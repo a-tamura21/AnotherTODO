@@ -58,7 +58,7 @@ defmodule DatabaseUtil.User do
     changeset
     |> validate_format(:email, ~r/^[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
 
-    # |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d).+$/)
+    |> validate_format(:password, ~r/^(?=.*[A-Za-z])(?=.*\d).+$/)
   end
 
   # The Security Pipeline

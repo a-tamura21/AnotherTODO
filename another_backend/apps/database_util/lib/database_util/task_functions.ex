@@ -3,11 +3,23 @@ defmodule DatabaseUtil.TaskFunctions do
   alias DatabaseUtil.Repo
 
   def get_all_tasks do
-    Task
-    |> Repo.all()
-    |> Repo.preload(:user)
-    |> Jason.encode!()
-  end
+  Task
+  |> Repo.all()
+  |> Enum.map(fn task ->
+    %{
+      id: task.id,
+      title: DatabaseUtil.Vault.decrypt!(task.title_encrypted),
+      content: DatabaseUtil.Vault.decrypt!(task.content_encrypted),
+      is_complete: task.is_complete,
+      due_date: task.due_date,
+      priority: task.priority,
+      user_id: task.user_id,
+      inserted_at: task.inserted_at,
+      updated_at: task.updated_at
+    }
+  end)
+  |> Jason.encode!()
+end
 
   def create_tasks(task_attrs) do
     # use task schema, task_attrs is a map so an empty map is needed

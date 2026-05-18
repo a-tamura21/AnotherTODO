@@ -4,12 +4,22 @@ defmodule DatabaseUtil.Task do
 
   @primary_key {:id, UUIDv7.Type, autogenerate: true}
   @foreign_key_type UUIDv7.Type
-  @derive {Jason.Encoder, except: [:__meta__]}
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :content_encrypted,
+             :is_complete,
+             :due_date,
+             :priority,
+             :user_id,
+             :inserted_at,
+             :updated_at
+           ]}
   @derive {Inspect, except: [:content_encrypted]}
   schema "tasks" do
-    field(:title_hashed, :string)
+    field(:title_encrypted, DatabaseUtil.Encrypted.Binary)
     field(:content_encrypted, DatabaseUtil.Encrypted.Binary)
-    # field(:content_hashed, DatabaseUtil.Hashed.HMAC)
+    field(:content_hashed, DatabaseUtil.Hashed.HMAC)
     field(:is_complete, :boolean, default: false)
     field(:due_date, :utc_datetime)
     field(:priority, :integer, default: 3)
@@ -37,43 +47,38 @@ defmodule DatabaseUtil.Task do
   end
 
   defp prepare_sensitive_content(changeset) do
-    # 1. Handle Title Hashing
-    changeset =
-      if title = get_change(changeset, :title) do
-        case DatabaseUtil.Hashed.HMAC.dump(title) do
-          {:ok, hashed_title} ->
-            put_change(changeset, :title_hashed, hashed_title)
-
-          _ ->
-            add_error(changeset, :title, "hashing failed")
-        end
-      else
-        changeset
-      end
-
-    # 2. Handle Content (Hashing and Encryption)
-    changeset =
-      if content = get_change(changeset, :content) do
-        case DatabaseUtil.Hashed.HMAC.dump(content) do
-          {:ok, hashed_content} ->
-            changeset = put_change(changeset, :content_hashed, hashed_content)
-
-            case DatabaseUtil.Vault.encrypt(content) do
-              {:ok, encrypted_binary} ->
-                put_change(changeset, :content_encrypted, encrypted_binary)
-
-              {:error, _} ->
-                add_error(changeset, :content, "encryption failed")
-            end
-
-          _ ->
-            add_error(changeset, :content, "hashing failed")
-        end
-      else
-        changeset
-      end
-
-    # Final return of the transformed changeset
     changeset
+    |> encrypt_title()
+    |> secure_content()
+  end
+
+  # 1. Handle Title Encryption
+  defp encrypt_title(changeset) do
+    with title when not is_nil(title) <- get_change(changeset, :title),
+         {:ok, encrypted_title} <- DatabaseUtil.Vault.encrypt(title) do
+      put_change(changeset, :title_encrypted, encrypted_title)
+    else
+      nil -> changeset
+      _error -> add_error(changeset, :title, "encryption failed")
+    end
+  end
+
+  # 2. Handle Content (Hashing and Encryption)
+  defp secure_content(changeset) do
+    with content when not is_nil(content) <- get_change(changeset, :content),
+         {:ok, hashed} <- DatabaseUtil.Hashed.HMAC.dump(content),
+         {:ok, encrypted} <- DatabaseUtil.Vault.encrypt(content) do
+      changeset
+      |> put_change(:content_hashed, hashed)
+      |> put_change(:content_encrypted, encrypted)
+    else
+      nil ->
+        changeset
+
+      # If content hashing succeeds but encryption fails, this catch-all or a specific match handles it
+      _error ->
+        # Note: If your app needs to differentiate why it failed, you can match specific error tuples here
+        add_error(changeset, :content, "security processing failed")
+    end
   end
 end

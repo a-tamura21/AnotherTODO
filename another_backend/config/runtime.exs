@@ -16,3 +16,6 @@ config :database_util, DatabaseUtil.Repo,
 # This single key is used by your Vault to derive BOTH
 # the encryption key and the blind index search key.
 config :database_util, :db_encryption, master_key: env!("MASTER_KEY", :string!)
+
+# 4. Gemini API Agent key
+config :langchain, :google_api_key, env!("GOOGLE_API_KEY", :string!)
