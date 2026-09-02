@@ -19,8 +19,11 @@ defmodule DatabaseUtil.AIAgent do
       }
       |> LLMChain.new!()
       |> LLMChain.add_messages(updated_messages)
-      |> LLMChain.add_tools([Calc.add_tool(),
-      Task_Tools.get_all_tasks_tool()])
+      |> LLMChain.add_tools([
+        Calc.add_tool(),
+        Task_Tools.get_all_tasks_tool(),
+        Task_Tools.create_tasks_tool()
+        ])
 
     {:ok, completed_chain} = LLMChain.run(chain, mode: :while_needs_response)
     # IO.inspect(completed_chain.last_message, label: "LAST MESSAGE")

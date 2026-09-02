@@ -13,7 +13,7 @@ defmodule DatabaseUtil.Application do
       # {DatabaseUtil.Worker, arg}
       DatabaseUtil.Vault,
       DatabaseUtil.Repo,
-      {Bandit, plug: DatabaseUtil.BackendApi},
+      DatabaseUtil.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

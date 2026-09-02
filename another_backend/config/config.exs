@@ -10,7 +10,9 @@
 import Config
 
 # Register the Ecto repo
-config :database_util,
+config :database_util, DatabaseUtil.Endpoint,
+  http: [port: 4000],
+  server: true,
   ecto_repos: [DatabaseUtil.Repo]
 
 # Repo-specific settings

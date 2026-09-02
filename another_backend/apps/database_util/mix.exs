@@ -36,6 +36,9 @@ defmodule DatabaseUtil.MixProject do
       {:jason, "~> 1.4"},
       {:bcrypt_elixir, "~> 3.3.2"},
       {:pbkdf2_elixir, "~> 2.0"},
+      {:phoenix, "~> 1.7"},
+      {:phoenix_html, "~> 4.0"},
+      {:plug_cowboy, "~> 2.0"},
       {:langchain, "~> 0.8.0"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
